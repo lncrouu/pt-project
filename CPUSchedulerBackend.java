@@ -20,6 +20,9 @@ public class CPUSchedulerBackend {
         public boolean completed = false;
         public int inputIndex; // Maintain numerical input order (P1, P2, P3... P10)
 
+        /**
+         * Creates a process with its ID, timing values, and original input position.
+         */
         public Process(String id, int arrivalTime, int burstTime, int inputIndex) {
             this.id = id;
             this.arrivalTime = arrivalTime;
@@ -28,6 +31,9 @@ public class CPUSchedulerBackend {
             this.inputIndex = inputIndex;
         }
 
+        /**
+         * Makes a separate copy of this process so simulations do not change the original data.
+         */
         public Process copy() {
             Process p = new Process(this.id, this.arrivalTime, this.burstTime, this.inputIndex);
             p.remainingTime = this.remainingTime;
@@ -46,6 +52,9 @@ public class CPUSchedulerBackend {
         public int startTime;
         public int endTime;
 
+        /**
+         * Creates one time block for the Gantt chart.
+         */
         public GanttBlock(String processId, int startTime, int endTime) {
             this.processId = processId;
             this.startTime = startTime;
@@ -63,6 +72,9 @@ public class CPUSchedulerBackend {
         public double avgWaitingTime;
         public double avgResponseTime;
 
+        /**
+         * Stores one algorithm's simulation results and calculates their average values.
+         */
         public SimulationResult(String algorithmName, int timeQuantum, List<Process> processes, List<GanttBlock> ganttChart) {
             this.algorithmName = algorithmName;
             this.timeQuantum = timeQuantum;
@@ -71,6 +83,9 @@ public class CPUSchedulerBackend {
             calculateAverages();
         }
 
+        /**
+         * Calculates the average completion, turnaround, waiting, and response times.
+         */
         private void calculateAverages() {
             if (processes == null || processes.isEmpty()) return;
             double totalCT = 0, totalTAT = 0, totalWT = 0, totalRT = 0;
@@ -88,6 +103,9 @@ public class CPUSchedulerBackend {
         }
     }
 
+    /**
+     * Runs the First-Come, First-Served scheduling algorithm.
+     */
     public static SimulationResult runFCFS(List<Process> inputList) {
         List<Process> procs = deepCopy(inputList);
         procs.sort((p1, p2) -> {
@@ -120,6 +138,9 @@ public class CPUSchedulerBackend {
         return new SimulationResult("First-Come, First-Served (FCFS)", 0, procs, mergeGanttBlocks(gantt));
     }
 
+    /**
+     * Runs the non-preemptive Shortest Job First scheduling algorithm.
+     */
     public static SimulationResult runSJF(List<Process> inputList) {
         List<Process> procs = deepCopy(inputList);
         List<GanttBlock> gantt = new ArrayList<>();
@@ -174,6 +195,9 @@ public class CPUSchedulerBackend {
         return new SimulationResult("Shortest Job First (SJF)", 0, procs, mergeGanttBlocks(gantt));
     }
 
+    /**
+     * Runs the preemptive Shortest Remaining Time First scheduling algorithm.
+     */
     public static SimulationResult runSRTF(List<Process> inputList) {
         List<Process> procs = deepCopy(inputList);
         List<GanttBlock> gantt = new ArrayList<>();
@@ -241,6 +265,9 @@ public class CPUSchedulerBackend {
         return new SimulationResult("Shortest Remaining Time First (SRTF)", 0, procs, mergeGanttBlocks(gantt));
     }
 
+    /**
+     * Runs the Round Robin algorithm using a fixed time quantum.
+     */
     public static SimulationResult runRoundRobin(List<Process> inputList, int tq) {
         if (tq <= 0) tq = 1;
         List<Process> procs = deepCopy(inputList);
@@ -321,6 +348,9 @@ public class CPUSchedulerBackend {
         return new SimulationResult("Round Robin (RR)", tq, procs, mergeGanttBlocks(gantt));
     }
 
+    /**
+     * Creates independent copies of all processes before a simulation starts.
+     */
     private static List<Process> deepCopy(List<Process> list) {
         List<Process> copy = new ArrayList<>();
         for (Process p : list) {
@@ -329,6 +359,9 @@ public class CPUSchedulerBackend {
         return copy;
     }
 
+    /**
+     * Combines neighboring Gantt chart blocks that belong to the same process.
+     */
     private static List<GanttBlock> mergeGanttBlocks(List<GanttBlock> list) {
         if (list == null || list.isEmpty()) return new ArrayList<>();
         List<GanttBlock> merged = new ArrayList<>();

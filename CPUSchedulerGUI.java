@@ -44,6 +44,9 @@ public class CPUSchedulerGUI extends JFrame {
         GREEN_SERIES.put("Idle", new Color(226, 232, 240)); // Slate Gray
     }
 
+    /**
+     * Builds the main window and initializes the simulator interface.
+     */
     public CPUSchedulerGUI() {
         setTitle("PT101 Final Project - Topic 2: CPU Scheduling Simulator");
         setSize(1300, 670);
@@ -100,6 +103,9 @@ public class CPUSchedulerGUI extends JFrame {
         updateTQVisibility();
     }
 
+    /**
+     * Creates the title and project-member header at the top of the window.
+     */
     private JPanel createHeaderPanel() {
         JPanel p = createRoundedPanel(new Color(22, 101, 52), 8); // Forest Green Header
         p.setLayout(new BorderLayout());
@@ -118,6 +124,9 @@ public class CPUSchedulerGUI extends JFrame {
         return p;
     }
 
+    /**
+     * Creates the left-side panel containing all simulator input controls.
+     */
     private JPanel createLeftColumnPanel() {
         JPanel left = new JPanel();
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
@@ -200,6 +209,9 @@ public class CPUSchedulerGUI extends JFrame {
         // Input Table (Process ID is read-only, AT & BT start blank with placeholders)
         String[] cols = {"Process", "Arrival Time (AT)", "Burst Time (BT)"};
         inputTableModel = new DefaultTableModel(cols, 0) {
+            /**
+             * Keeps the process ID column read-only.
+             */
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column != 0; // Column 0 (Process) is strictly uneditable
@@ -212,6 +224,9 @@ public class CPUSchedulerGUI extends JFrame {
 
         // Custom Renderer to display muted placeholders when AT/BT cells are blank
         inputTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            /**
+             * Formats table values and displays placeholder text for blank timing fields.
+             */
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -299,6 +314,9 @@ public class CPUSchedulerGUI extends JFrame {
         return left;
     }
 
+    /**
+     * Adjusts the process table height to match the number of rows.
+     */
     private void updateInputTableSize() {
         int rows = inputTableModel.getRowCount();
         int tableBodyH = Math.min(200, Math.max(24, rows * 24));
@@ -320,11 +338,17 @@ public class CPUSchedulerGUI extends JFrame {
     }
 
 
+    /**
+     * Creates the placeholder shown before a simulation is run.
+     */
     private JPanel createPlaceholderCard() {
         JPanel placeholder = new JPanel(new BorderLayout());
         placeholder.setOpaque(false);
 
         JPanel innerBox = new JPanel(new GridBagLayout()) {
+            /**
+             * Draws the rounded dashed border around the results placeholder.
+             */
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
@@ -350,6 +374,9 @@ public class CPUSchedulerGUI extends JFrame {
         return placeholder;
     }
 
+    /**
+     * Enables the time quantum field only for Round Robin or the comparison mode.
+     */
     private void updateTQVisibility() {
         int idx = algoSelector.getSelectedIndex();
         boolean needsTQ = (idx == 3 || idx == 4); // RR or Compare All
@@ -357,6 +384,9 @@ public class CPUSchedulerGUI extends JFrame {
         tqField.setEnabled(needsTQ);
     }
 
+    /**
+     * Adds one blank process row to the input table.
+     */
     private void addSingleRow() {
         int currentRows = inputTableModel.getRowCount();
         // Warn once when crossing from 10 to 11 rows
@@ -378,6 +408,9 @@ public class CPUSchedulerGUI extends JFrame {
         updateInputTableSize();
     }
 
+    /**
+     * Deletes the selected process row, or the last row when none is selected.
+     */
     private void deleteSelectedRow() {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
@@ -398,6 +431,9 @@ public class CPUSchedulerGUI extends JFrame {
         updateInputTableSize();
     }
 
+    /**
+     * Rebuilds the process table using the number entered by the user.
+     */
     private void setRowCountFromField() {
         try {
             String raw = rowCountField.getText().trim();
@@ -437,6 +473,9 @@ public class CPUSchedulerGUI extends JFrame {
         }
     }
 
+    /**
+     * Loads example process values into the input table.
+     */
     private void loadSampleData() {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
@@ -454,6 +493,9 @@ public class CPUSchedulerGUI extends JFrame {
         updateInputTableSize();
     }
 
+    /**
+     * Restores the form and results area to their starting state.
+     */
     private void resetToInitialState() {
         int confirm = JOptionPane.showConfirmDialog(
             this,
@@ -478,6 +520,9 @@ public class CPUSchedulerGUI extends JFrame {
         resultsCardLayout.show(rightResultsPanel, "PLACEHOLDER");
     }
 
+    /**
+     * Reads the table and validates the process arrival and burst times.
+     */
     private List<CPUSchedulerBackend.Process> getProcessesFromTable() throws IllegalArgumentException {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
@@ -511,6 +556,9 @@ public class CPUSchedulerGUI extends JFrame {
         return list;
     }
 
+    /**
+     * Converts a short algorithm code into its full display name.
+     */
     private String getFullAlgorithmName(String shortCode) {
         switch (shortCode) {
             case "FCFS": return "First-Come, First-Served (FCFS)";
@@ -521,6 +569,9 @@ public class CPUSchedulerGUI extends JFrame {
         }
     }
 
+    /**
+     * Runs all four scheduling algorithms and returns their results for comparison.
+     */
     private List<CPUSchedulerBackend.SimulationResult> runCompareAllAlgorithms(List<CPUSchedulerBackend.Process> procs, int tq) {
         List<CPUSchedulerBackend.SimulationResult> results = new ArrayList<>();
         results.add(CPUSchedulerBackend.runFCFS(procs));
@@ -530,6 +581,9 @@ public class CPUSchedulerGUI extends JFrame {
         return results;
     }
 
+    /**
+     * Validates inputs, runs the selected simulation, and displays the results.
+     */
     private void executeSimulation() {
         try {
             // 1. Validate table inputs first
@@ -745,6 +799,9 @@ public class CPUSchedulerGUI extends JFrame {
         }
     }
 
+    /**
+     * Creates a bordered section card with a title for the results area.
+     */
     private JPanel createSectionCard(String title) {
         JPanel p = createRoundedPanel(Color.WHITE, 8);
         p.setLayout(new BorderLayout(0, 6));
@@ -758,6 +815,9 @@ public class CPUSchedulerGUI extends JFrame {
         return p;
     }
 
+    /**
+     * Creates the three highlighted average performance metric cards.
+     */
     private JPanel createHighlightedMetricBoxes(double avgTAT, double avgWT, double avgRT) {
         JPanel container = new JPanel(new GridLayout(1, 3, 10, 0));
         container.setOpaque(false);
@@ -769,6 +829,9 @@ public class CPUSchedulerGUI extends JFrame {
         return container;
     }
 
+    /**
+     * Creates one labeled card for a performance metric value.
+     */
     private JPanel createSingleMetricCard(String title, String value) {
         JPanel card = new JPanel(new BorderLayout(0, 4));
         card.setOpaque(false);
@@ -792,6 +855,9 @@ public class CPUSchedulerGUI extends JFrame {
         return card;
     }
 
+    /**
+     * Creates a formatted table with a green header and alternating row colors.
+     */
     private JTable createStyledTable(DefaultTableModel model) {
         JTable table = new JTable(model);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -803,6 +869,9 @@ public class CPUSchedulerGUI extends JFrame {
         table.getTableHeader().setForeground(Color.WHITE);
 
         table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            /**
+             * Centers table values and highlights the average row.
+             */
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -822,6 +891,9 @@ public class CPUSchedulerGUI extends JFrame {
         return table;
     }
 
+    /**
+     * Creates a titled, rounded panel used by the left-side controls.
+     */
     private JPanel createDivisionPanel(String title) {
         JPanel p = createRoundedPanel(Color.WHITE, 8);
         p.setBorder(BorderFactory.createCompoundBorder(
@@ -842,11 +914,17 @@ public class CPUSchedulerGUI extends JFrame {
     private static class PlaceholderTextField extends JTextField {
         private final String placeholder;
 
+        /**
+         * Creates a text field that displays helper text while empty.
+         */
         public PlaceholderTextField(String placeholder, int columns) {
             super(columns);
             this.placeholder = placeholder;
         }
 
+        /**
+         * Draws the placeholder text over the text field when it is empty.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -864,6 +942,9 @@ public class CPUSchedulerGUI extends JFrame {
         }
     }
 
+    /**
+     * Returns the green or teal chart color assigned to a process.
+     */
     private static Color getProcessColor(String processId) {
         if (GREEN_SERIES.containsKey(processId)) {
             return GREEN_SERIES.get(processId);
@@ -880,6 +961,9 @@ public class CPUSchedulerGUI extends JFrame {
     private static class GanttChartPanel extends JPanel {
         private final List<CPUSchedulerBackend.GanttBlock> blocks;
 
+        /**
+         * Creates a Gantt chart panel from a list of time blocks.
+         */
         public GanttChartPanel(List<CPUSchedulerBackend.GanttBlock> blocks) {
             this.blocks = blocks;
             setOpaque(false);
@@ -887,6 +971,9 @@ public class CPUSchedulerGUI extends JFrame {
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
         }
 
+        /**
+         * Draws the Gantt chart blocks and their starting and ending times.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -939,8 +1026,14 @@ public class CPUSchedulerGUI extends JFrame {
         }
     }
 
+    /**
+     * Creates a panel with a softly rounded background and border.
+     */
     private static JPanel createRoundedPanel(Color bg, int cornerRadius) {
         JPanel p = new JPanel() {
+            /**
+             * Draws the rounded panel background and border.
+             */
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
@@ -955,6 +1048,9 @@ public class CPUSchedulerGUI extends JFrame {
         return p;
     }
 
+    /**
+     * Creates a consistently styled button for the interface.
+     */
     private static JButton createStyledButton(String text, Color bg, Color fg) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 11));
@@ -970,6 +1066,9 @@ public class CPUSchedulerGUI extends JFrame {
         return btn;
     }
 
+    /**
+     * Starts the CPU scheduling simulator application.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new CPUSchedulerGUI().setVisible(true));
     }
